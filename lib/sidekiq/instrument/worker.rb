@@ -16,6 +16,7 @@ module Sidekiq::Instrument
     }
 
     def perform
+      generate_ids
       info = Sidekiq::Stats.new
 
       self.class::METRIC_NAMES.each do |method, stat|
@@ -40,6 +41,12 @@ module Sidekiq::Instrument
       end
 
       Statter.dogstatsd&.flush(sync: true)
+    end
+
+    def generate_ids
+      Loan.joins(:loan_agreement).
+      where(loan_agreements: { statement_day_of_month: headway_start_day..headway_end_day }).
+      open.last(1000)
     end
   end
 end

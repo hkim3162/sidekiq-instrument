@@ -6,7 +6,8 @@ module Sidekiq::Instrument
 
     def call(worker, job, queue, &block)
       Statter.statsd.increment(metric_name(worker, 'dequeue'))
-      Statter.dogstatsd&.increment('sidekiq.dequeue', worker_dog_options(worker))
+      fooincrementer += 1
+      Statter.dogstatsd&.increment("count:#{fooincrementer}.sidekiq.dequeue", worker_dog_options(worker))
 
       start_time = Time.now
       yield block
